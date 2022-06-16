@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Menu;
 use Illuminate\Http\Request;
+use App\Utils\WithUtils;
 
 class MenuController extends Controller
 {
@@ -106,9 +107,15 @@ class MenuController extends Controller
      * @param  \App\Menu  $menu
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Menu $menu)
+    public function destroy($menu)
     {
-        //
+        $delete = Menu::where('id',$menu)->update([
+            'status' => 0,
+        ]);
+        if(!$delete){
+            return response()->json(['value' => false, 'message' => "No se pudo eliminar"]);
+        }
+        return response()->json(['value' => true, 'message' => "Menu Eliminado"]);
     }
 
     public function createMenuByWeek(Request $request)
@@ -156,19 +163,44 @@ class MenuController extends Controller
             $tickets_stock = $value['tickets_stock'];
 
             try {
-                $menu = Menu::create([
+                $menu = Menu::updateOrCreate([
+                    'type_menu_id' => $type_menu_id,
+                    'reservation_date' => $reservation_date,
+                    'status' => 1
+                ],[
                     'type_menu_id' => $type_menu_id,
                     'reservation_date' => $reservation_date,
                     'tickets_stock' => $tickets_stock,
                 ]);
-                if (!$menu) {
-                    return response()->json(['value' => false, 'message' => "Error"]);
-                }
             } catch (\Exception $e) {
-                return response()->json(['value' => false, 'message' => "Error"]);
+                return response()->json(['value' => false, 'message' => $e->getMessage()]);
             }
 
         }
         return response()->json(['value' => true, 'message' => "Registrado con éxito"]);
     }
+
+    public function search(Request $request){
+
+        $date_start = $request->date_start;
+        $date_end = $request->date_end;
+        $menu = Menu::with(WithUtils::withMenu())->where('status',1)
+            ->whereBetween('reservation_date',[$date_start." 00:00:00",$date_end." 23:59:59"])
+            ->get();
+        if(count($menu) == 0){
+            return response()->json(['value' => false, 'message' => "No se encontraron resultados"]);
+        }
+        return response()->json(['value' => true,'data'=>$menu, 'message' => "Listado"]);
+    }
+
+    public function searchAll(Request $request){
+
+        $menu = Menu::with(WithUtils::withMenu())->where('status',1)
+            ->get();
+        if(count($menu) == 0){
+            return response()->json(['value' => false, 'message' => "No se encontraron resultados"]);
+        }
+        return response()->json(['value' => true,'data'=>$menu, 'message' => "Listado"]);
+    }
+
 }

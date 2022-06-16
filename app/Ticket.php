@@ -22,6 +22,7 @@ class Ticket extends Model
         'student_id',
         'professor_id',
         'menu_id',
+        'quantity',
         'consumed',
         'status',
     ];

@@ -14,7 +14,7 @@
                         </div>
                     @endif
 
-                    Bienvenido al sistema de Tickets {{ Auth::user()->name }}
+                    Bienvenido al sistema de Tickets
                 </div>
             </div>
         </div>

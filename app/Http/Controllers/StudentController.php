@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Ticket;
+use App\Menu;
 use App\Student;
 use Illuminate\Http\Request;
 use App\Utils\WithUtils;
@@ -163,13 +165,87 @@ class StudentController extends Controller
 
     public function search(Request $request)
     {
-        $code = $request->code;
+        $code = $request->document;
         $students = Student::with(WithUtils::withStudent())->where(
-            'code', 'like', '%'.$code.'%'
+            'code', 'like', "%$code%"
         )->get();
         if(count($students) == 0){
             return response()->json(['value' => false,'message' => "No se encontraron resultados"]);
         }
         return response()->json(['value' => true,'data' => $students,'message' => "Success"]);
+    }
+
+    public function search2(Request $request)
+    {
+        $code = $request->document;
+        if(strlen($code)!=10){
+            return response()->json(['value' => false,'message' => "Debe ingresar 10 caracteres"]);
+        }
+        $students = Student::with(WithUtils::withStudent())->where(
+            'code', '=', trim($code)
+        )->get();
+        if(count($students) == 0){
+            return response()->json(['value' => false,'message' => "No se encontraron resultados"]);
+        }
+        return response()->json(['value' => true,'data' => $students,'message' => "Success"]);
+    }
+
+    public function searchReception(Request $request){
+
+        $code = $request->document;
+        if(strlen($code)!=10){
+            return response()->json(['value' => false,'message' => "Debe ingresar 10 caracteres"]);
+        }
+        $student = Student::with(WithUtils::withStudent())->where(
+            'code', '=', trim($code)
+        )->first();
+        if(!$student){
+            return response()->json(['value' => false,'message' => "No se encontraron resultados"]);
+        }
+
+        date_default_timezone_set('America/Lima');
+        $data = [
+            "name" => $student->person->name." ".$student->person->last_name,
+            "file" => "",
+            "quantity" => 0,
+            "status" => 0,
+            "date" => date("Y-m-d"),
+        ];
+
+        $menus = Menu::with(WithUtils::withMenu())->where([
+            ["reservation_date", "=", date("Y-m-d")],
+            ['status','=',1],
+        ])->get();
+        $tickets = [];
+        foreach($menus as $key => $menu){
+            $ticket = Ticket::with(WithUtils::withTicket())->where([
+                ["student_id", "=", $student->id],
+                ['menu_id','=',$menu->id],
+                ["status","=",1],
+            ])->first();
+            if($ticket){
+                $tickets[] = $ticket;
+            }
+        }
+
+        if(count($tickets) == 0){
+            return response()->json(['value' => true,'data' => $data,'message' => "No se encontró ticket"]);
+        }
+
+        $tickets_end = [];
+        foreach($tickets as $key => $value){
+            $menu = json_decode(json_encode($value->menu),true);
+            $tickets_end[] = [
+                "status" => $value->consumed?2:1,
+                "quantity" => $value->id,
+                "type_menu_id" => $value->menu->type_menu_id,
+                "type_menu" => $menu["type_menu"]["name"],
+                "ticket_id" => $value->id,
+            ];
+        }
+
+        $data["tickets"] = $tickets_end;
+
+        return response()->json(['value' => true,'data' => $data,'message' => "Success"]);
     }
 }

@@ -25,6 +25,8 @@ Vue.component('student-component', require('./modules/student/index.vue').defaul
 Vue.component('professor-component', require('./modules/professor/index.vue').default);
 Vue.component('menu-component', require('./modules/menu/index.vue').default);
 Vue.component('ticket-component', require('./modules/ticket/index.vue').default);
+Vue.component('reception-component', require('./modules/reception/index.vue').default);
+Vue.component('report-component', require('./modules/report/index.vue').default);
 
 /**
  * Next, we will create a fresh Vue application instance and attach it to

@@ -8,7 +8,7 @@
                             <div class="container-xxl d-flex align-items-md-center">
                                 <div class="bd-search position-relative me-auto">
                                     <ol class="breadcrumb mb-0">
-                                        <li class="breadcrumb-item">Mantenimiento</li>
+                                        <li class="breadcrumb-item">Operaciones</li>
                                         <li class="breadcrumb-item active" aria-current="page">Menu</li>
                                     </ol>
                                 </div>
@@ -18,8 +18,8 @@
                 </div>
             </div>
         </div>
-        <Form ref="my-form" @updated="updatedFinish"></Form>
-        <Table ref="my-table" @update-item="updateItem"></Table>
+        <Form ref="my-form" @updated="updatedFinish" @search="searchMenu"></Form>
+        <Table ref="my-table" @update-item="updateItem" @deleted="deleted"></Table>
     </div>
 </template>
 
@@ -40,9 +40,21 @@ export default {
         updateItem(item) {
             this.$refs["my-form"].setItem(item);
         },
-        updatedFinish() {
-            this.$refs["my-table"].searchPerson();
+        updatedFinish(menu) {
+            this.$refs["my-table"].searchMenu(menu);
+        },
+        deleted() {
+            this.$refs["my-form"].fillData();
+        },
+        searchMenu(menu){
+            this.$refs["my-table"].searchMenu(menu);
         }
     },
+  mounted() {
+    this.$refs["my-table"].searchMenu({
+      date_start: '2022-06-13',
+      date_end: '2022-06-17',
+    });
+  }
 }
 </script>

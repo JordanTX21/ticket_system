@@ -4,8 +4,10 @@ namespace App\Exports;
 
 use Maatwebsite\Excel\Concerns\FromCollection;
 use Maatwebsite\Excel\Concerns\WithStyles;
+use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
+use Maatwebsite\Excel\Concerns\WithColumnWidths;
 
-class ArrayExport implements FromCollection, WithStyles
+class ArrayExport implements FromCollection, WithStyles, WithColumnWidths
 {
     protected $data;
 
@@ -20,6 +22,20 @@ class ArrayExport implements FromCollection, WithStyles
     {
         return collect($this->data);
     }
+
+    /**
+     * @return array
+     */
+    public function columnWidths(): array
+    {
+        return [
+            'A' => 16,
+            'B' => 12,
+            'C' => 16,
+            'D' => 26,
+        ];
+    }
+
     /**
      * @return array
      */
@@ -29,7 +45,7 @@ class ArrayExport implements FromCollection, WithStyles
                 'font' => ['bold' => true,'color' =>['argb' => 'FFFFFFFF'] ],
                 'fill'=> [
                     'fillType' => \PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID,
-                    'startColor' => ['argb' => 'FFFFFFFF']
+                    'startColor' => ['argb' => 'FF000000']
                 ]
             ],
         ];

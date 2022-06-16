@@ -3,7 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Professor;
+use App\Menu;
 use App\Person;
+use App\Ticket;
 use Illuminate\Http\Request;
 use App\Utils\WithUtils;
 
@@ -150,5 +152,91 @@ class ProfessorController extends Controller
             return response()->json(['value' => false,'message' => "No se encontraron resultados"]);
         }
         return response()->json(['value' => true,'data' => $professors,'message' => "Success"]);
+    }
+
+    public function search2(Request $request)
+    {
+        $document = $request->document;
+        if(strlen($document)!=8){
+            return response()->json(['value' => false,'message' => "Debe ingresar 8 caracteres"]);
+        }
+        if($document){
+            $people = Person::where(
+                'document', '=', $document
+            )->first();
+            if(!$people){
+                return response()->json(['value' => false,'message' => "No se encontraron resultados"]);
+            }
+            $professors = Professor::with(WithUtils::withProfessor())->where(
+                'person_id', '=', $people->id
+            )->get();
+        }else{
+            $professors = Professor::with(WithUtils::withProfessor())->get();
+        }
+        if(count($professors) == 0){
+            return response()->json(['value' => false,'message' => "No se encontraron resultados"]);
+        }
+        return response()->json(['value' => true,'data' => $professors,'message' => "Success"]);
+    }
+
+    public function searchReception(Request $request){
+
+        $document = $request->document;
+        if(strlen($document)!=8){
+            return response()->json(['value' => false,'message' => "Debe ingresar 8 caracteres"]);
+        }
+        $people = Person::where(
+            'document', '=', $document
+        )->first();
+        if(!$people){
+            return response()->json(['value' => false,'message' => "No se encontraron resultados"]);
+        }
+        $professor = Professor::with(WithUtils::withProfessor())->where(
+            'person_id', '=', $people->id
+        )->first();
+
+        if(!$professor){
+            return response()->json(['value' => false,'message' => "No se encontraron resultados"]);
+        }
+
+        date_default_timezone_set('America/Lima');
+        $data = [
+            "name" => $professor->person->name." ".$professor->person->last_name,
+            "file" => "",
+            "quantity" => 0,
+            "status" => 0,
+        ];
+
+        $menus = Menu::with(WithUtils::withMenu())->where([
+            ["reservation_date", "=", date("Y-m-d")],
+            ['status','=',1],
+        ])->get();
+        $tickets = [];
+        foreach($menus as $key => $menu){
+            $ticket = Ticket::with(WithUtils::withTicket())->where([
+                ["professor_id", "=", $professor->id],
+                ['menu_id','=',$menu->id],
+                ["status","=",1],
+            ])->first();
+            $tickets[] = $ticket;
+        }
+
+        if(count($tickets) == 0){
+            return response()->json(['value' => true,'data' => $data,'message' => "No se encontró ticket"]);
+        }
+        $tickets_end = [];
+        foreach($tickets as $key => $value){
+            $tickets_end[] = [
+                "status" => $value->consumed?2:1,
+                "quantity" => $value->id,
+                "type_menu_id" => $value->menu->type_menu_id,
+                "type_menu" => $value->menu->type_menu->name,
+                "ticket_id" => $value->id,
+            ];
+        }
+
+        $data["tickets"] = $tickets_end;
+
+        return response()->json(['value' => true,'data' => $data,'message' => "Success"]);
     }
 }

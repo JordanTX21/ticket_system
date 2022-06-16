@@ -40,6 +40,7 @@
                             aria-label="Close"></button>
                     </div>
                     <div class="offcanvas-body">
+                        @if(false)
                         <ul class="navbar-nav justify-content-end flex-grow-1 pe-3">
                             @guest
                                 <!-- Authentication Links -->
@@ -73,9 +74,6 @@
                                             <li class="nav-item">
                                                 <a class="nav-link" href="/student">Estudiante</a>
                                             </li>
-                                            <li class="nav-item">
-                                                <a class="nav-link" href="/menu">Gestionar Menu</a>
-                                            </li>
                                         </ul>
                                     </div>
                                 </li>
@@ -88,10 +86,16 @@
                                     <div class="collapse" id="collapseOptions">
                                         <ul>
                                             <li class="nav-item">
+                                                <a class="nav-link" href="/menu">Gestionar Tickets</a>
+                                            </li>
+                                            <li class="nav-item">
                                                 <a class="nav-link" href="/ticket">Generar Ticket Virtual</a>
                                             </li>
                                             <li class="nav-item">
-                                                <a class="nav-link" href="#">Generar Reporte</a>
+                                                <a class="nav-link" href="/reception">Despachar Menu</a>
+                                            </li>
+                                            <li class="nav-item">
+                                                <a class="nav-link" href="/report">Generar Reporte</a>
                                             </li>
                                         </ul>
                                     </div>
@@ -120,6 +124,32 @@
                                     </div>
                                 </li>
                             @endguest
+                        </ul>
+                        @endif
+                        <ul class="navbar-nav justify-content-end flex-grow-1 pe-3">
+                            <li class="nav-item">
+                                <a class="nav-link dropdown-toggle active" aria-current="page" data-bs-toggle="collapse"
+                                   href="#collapseOptions" role="button" aria-expanded="false"
+                                   aria-controls="collapseOptions">
+                                    Operaciones <span class="caret"></span>
+                                </a>
+                                <div class="collapse" id="collapseOptions">
+                                    <ul>
+                                        <li class="nav-item">
+                                            <a class="nav-link" href="/menu">Gestionar Tickets</a>
+                                        </li>
+                                        <li class="nav-item">
+                                            <a class="nav-link" href="/ticket">Generar Ticket Virtual</a>
+                                        </li>
+                                        <li class="nav-item">
+                                            <a class="nav-link" href="/reception">Despachar Menu</a>
+                                        </li>
+                                        <li class="nav-item">
+                                            <a class="nav-link" href="/report">Generar Reporte</a>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </li>
                         </ul>
                     </div>
                 </div>

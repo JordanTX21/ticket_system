@@ -30,6 +30,7 @@ class CreateTicketTable extends Migration
                 ->references('id')
                 ->on('menu')
                 ->onDelete('cascade');
+            $table->bigInteger('quantity')->nullable();
             $table->boolean('consumed')->default(false);
             $table->boolean('status')->default(true);
             $table->timestamps();

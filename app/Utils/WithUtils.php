@@ -27,8 +27,11 @@ class WithUtils{
     {
         return array(
             'student',
+            'student.person',
             'professor',
-            'menu'
+            'professor.person',
+            'menu',
+            'menu.typeMenu'
         );
     }
 }

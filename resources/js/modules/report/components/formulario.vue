@@ -75,7 +75,7 @@
                 <select id="cycle" class="form-select" v-model="ticket.type_menu_id">
                   <option :value="1" selected>Desayuno</option>
                   <option :value="2" selected>Almuerzo</option>
-                  <option :value="3" selected>Lonche</option>
+                  <option :value="3" selected>Cena</option>
                 </select>
               </div>
             </div>

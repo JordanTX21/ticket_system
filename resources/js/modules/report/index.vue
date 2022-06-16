@@ -18,8 +18,8 @@
                 </div>
             </div>
         </div>
-        <Form ref="my-form" @updated="updatedFinish"></Form>
-        <Table ref="my-table" @update-item="updateItem" v-if="false"></Table>
+        <Form ref="my-form" @updated="updatedFinish" v-if="false"></Form>
+        <Table ref="my-table" @update-item="updateItem"></Table>
     </div>
 </template>
 
